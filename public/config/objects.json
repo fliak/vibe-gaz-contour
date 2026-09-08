@@ -1,0 +1,28 @@
+{
+  "objects": [
+    {
+      "id": "grp-2",
+      "name": "ГРП-2",
+      "type": "ГРП",
+      "address": "ул. Промышленная, 14",
+      "aliases": ["второй грп", "грп два", "грп на промышленной"],
+      "configUrl": "/config/objects/grp-2.json"
+    },
+    {
+      "id": "shrp-5",
+      "name": "ШРП-5",
+      "type": "ШРП",
+      "address": "ул. Садовая, 8",
+      "aliases": ["пятый шрп", "шрп пять", "шрп на садовой"],
+      "configUrl": "/config/objects/shrp-5.json"
+    },
+    {
+      "id": "grpsh-12",
+      "name": "ГРПШ-12",
+      "type": "ГРПШ",
+      "address": "ул. Озёрная, 23",
+      "aliases": ["грпш двенадцать", "двенадцатый грпш", "грпш на озерной"],
+      "configUrl": "/config/objects/grpsh-12.json"
+    }
+  ]
+}

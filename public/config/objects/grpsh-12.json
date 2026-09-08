@@ -1,0 +1,113 @@
+{
+  "id": "grpsh-12",
+  "updatedAt": "2026-09-08T12:30:00+03:00",
+  "metrics": [
+    {
+      "id": "inlet-pressure",
+      "name": "Давление на входе",
+      "value": 0.45,
+      "unit": "МПа",
+      "status": "normal",
+      "range": {
+        "min": 0.35,
+        "max": 0.5
+      },
+      "icon": "gauge",
+      "aliases": ["входное давление", "давление на входе", "на входе"],
+      "updatedAt": "2026-09-08T12:30:00+03:00"
+    },
+    {
+      "id": "outlet-pressure",
+      "name": "Давление на выходе",
+      "value": 0.27,
+      "unit": "МПа",
+      "status": "normal",
+      "range": {
+        "min": 0.2,
+        "max": 0.3
+      },
+      "icon": "gauge",
+      "aliases": ["выходное давление", "давление на выходе", "на выходе"],
+      "updatedAt": "2026-09-08T12:30:00+03:00"
+    },
+    {
+      "id": "filter-delta",
+      "name": "Перепад на фильтре",
+      "value": 3.8,
+      "unit": "кПа",
+      "status": "normal",
+      "range": {
+        "min": 0,
+        "max": 6
+      },
+      "icon": "filter",
+      "aliases": ["перепад", "перепад давления", "перепад давления на фильтре"],
+      "updatedAt": "2026-09-08T12:30:00+03:00"
+    },
+    {
+      "id": "room-temperature",
+      "name": "Температура в помещении",
+      "value": 9.5,
+      "unit": "°C",
+      "status": "normal",
+      "range": {
+        "min": 5,
+        "max": 35
+      },
+      "icon": "thermometer",
+      "aliases": ["температура", "температуру", "температуру в помещении"],
+      "updatedAt": "2026-09-08T12:30:00+03:00"
+    }
+  ],
+  "equipment": [
+    {
+      "id": "filter-1",
+      "name": "Фильтр ФГ-16",
+      "status": "normal",
+      "statusText": "Работает штатно"
+    },
+    {
+      "id": "temperature-1",
+      "name": "Датчик температуры",
+      "status": "normal",
+      "statusText": "Данные доступны"
+    },
+    {
+      "id": "outlet-1",
+      "name": "Выходной датчик давления",
+      "status": "normal",
+      "statusText": "Работает штатно"
+    }
+  ],
+  "documents": [
+    {
+      "id": "grpsh-12-scheme",
+      "title": "Схема обвязки ГРПШ-12",
+      "category": "scheme",
+      "url": "/documents/grpsh-12/scheme.png",
+      "mimeType": "image/png",
+      "date": "2026-09-08",
+      "size": 90676,
+      "isPrimary": true
+    },
+    {
+      "id": "grpsh-12-regime-card",
+      "title": "Режимная карта ГРПШ-12",
+      "category": "regime-card",
+      "url": "/documents/grpsh-12/regime-card.pdf",
+      "mimeType": "application/pdf",
+      "date": "2026-09-08",
+      "size": 98342,
+      "isPrimary": true
+    },
+    {
+      "id": "grpsh-12-passport",
+      "title": "Паспорт фильтра ФГ-16",
+      "category": "passport",
+      "url": "/documents/grpsh-12/passport.pdf",
+      "mimeType": "application/pdf",
+      "date": "2026-08-28",
+      "size": 83966
+    }
+  ]
+}

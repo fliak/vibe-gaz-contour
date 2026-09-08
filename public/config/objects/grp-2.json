@@ -1,0 +1,113 @@
+{
+  "id": "grp-2",
+  "updatedAt": "2026-09-08T12:30:00+03:00",
+  "metrics": [
+    {
+      "id": "inlet-pressure",
+      "name": "Давление на входе",
+      "value": 0.42,
+      "unit": "МПа",
+      "status": "normal",
+      "range": {
+        "min": 0.35,
+        "max": 0.5
+      },
+      "icon": "gauge",
+      "aliases": ["входное давление", "давление на входе", "на входе"],
+      "updatedAt": "2026-09-08T12:30:00+03:00"
+    },
+    {
+      "id": "outlet-pressure",
+      "name": "Давление на выходе",
+      "value": 0.28,
+      "unit": "МПа",
+      "status": "normal",
+      "range": {
+        "min": 0.2,
+        "max": 0.3
+      },
+      "icon": "gauge",
+      "aliases": ["выходное давление", "давление на выходе", "на выходе"],
+      "updatedAt": "2026-09-08T12:30:00+03:00"
+    },
+    {
+      "id": "filter-delta",
+      "name": "Перепад на фильтре",
+      "value": 4.2,
+      "unit": "кПа",
+      "status": "normal",
+      "range": {
+        "min": 0,
+        "max": 6
+      },
+      "icon": "filter",
+      "aliases": ["перепад", "перепад давления", "перепад давления на фильтре"],
+      "updatedAt": "2026-09-08T12:30:00+03:00"
+    },
+    {
+      "id": "room-temperature",
+      "name": "Температура в помещении",
+      "value": 8,
+      "unit": "°C",
+      "status": "normal",
+      "range": {
+        "min": 5,
+        "max": 35
+      },
+      "icon": "thermometer",
+      "aliases": ["температура", "температуру", "температуру в помещении"],
+      "updatedAt": "2026-09-08T12:30:00+03:00"
+    }
+  ],
+  "equipment": [
+    {
+      "id": "filter-1",
+      "name": "Фильтр ФГ-16",
+      "status": "normal",
+      "statusText": "Работает штатно"
+    },
+    {
+      "id": "temperature-1",
+      "name": "Датчик температуры",
+      "status": "normal",
+      "statusText": "Данные доступны"
+    },
+    {
+      "id": "outlet-1",
+      "name": "Выходной датчик давления",
+      "status": "normal",
+      "statusText": "Работает штатно"
+    }
+  ],
+  "documents": [
+    {
+      "id": "grp-2-scheme",
+      "title": "Схема обвязки ГРП-2",
+      "category": "scheme",
+      "url": "/documents/grp-2/scheme.png",
+      "mimeType": "image/png",
+      "date": "2026-09-08",
+      "size": 90344,
+      "isPrimary": true
+    },
+    {
+      "id": "grp-2-regime-card",
+      "title": "Режимная карта ГРП-2",
+      "category": "regime-card",
+      "url": "/documents/grp-2/regime-card.pdf",
+      "mimeType": "application/pdf",
+      "date": "2026-09-08",
+      "size": 97759,
+      "isPrimary": true
+    },
+    {
+      "id": "grp-2-passport",
+      "title": "Паспорт фильтра ФГ-16",
+      "category": "passport",
+      "url": "/documents/grp-2/passport.pdf",
+      "mimeType": "application/pdf",
+      "date": "2026-08-28",
+      "size": 83443
+    }
+  ]
+}
