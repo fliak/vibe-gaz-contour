@@ -23,12 +23,12 @@
     {
       "id": "outlet-pressure",
       "name": "Давление на выходе",
-      "value": 0.28,
+      "value": 2.0,
       "unit": "кПа",
       "status": "normal",
       "range": {
-        "min": 0.2,
-        "max": 0.3
+        "min": 1.9,
+        "max": 2.3
       },
       "icon": "gauge",
       "aliases": [
