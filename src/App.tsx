@@ -90,8 +90,21 @@ function getSaved() {
     return "";
   }
 }
+function returnView() {
+  const saved = window.history.state?.gazkonturReturn;
+  return saved && typeof saved === "object" ? saved : {};
+}
+// Android's native PDF page does not imply support for embedded <object>.
+function needsPdfPage() {
+  return (
+    /Android/i.test(navigator.userAgent) || navigator.pdfViewerEnabled !== true
+  );
+}
 export default function App() {
-  const [tab, setTab] = useState<Tab>("voice"),
+  const [tab, setTab] = useState<Tab>(() => {
+      const saved = returnView().tab;
+      return saved === "documents" || saved === "telemetry" ? saved : "voice";
+    }),
     [objects, setObjects] = useState<SiteObject[]>([]),
     [current, setCurrent] = useState(getSaved),
     [loading, setLoading] = useState(true),
@@ -100,8 +113,12 @@ export default function App() {
     [query, setQuery] = useState(""),
     [result, setResult] = useState<Result | null>(null),
     [phase, setPhase] = useState(""),
-    [search, setSearch] = useState(""),
-    [category, setCategory] = useState("all"),
+    [search, setSearch] = useState(() =>
+      typeof returnView().search === "string" ? returnView().search : "",
+    ),
+    [category, setCategory] = useState(() =>
+      typeof returnView().category === "string" ? returnView().category : "all",
+    ),
     [doc, setDoc] = useState<Doc | null>(null),
     [docUrl, setDocUrl] = useState(""),
     [docError, setDocError] = useState(""),
@@ -187,7 +204,9 @@ export default function App() {
       window.speechSynthesis?.cancel();
     };
   }, []);
-  useEffect(() => { window.scrollTo({ top: 0 }); }, [tab]);
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [tab]);
   useEffect(() => {
     try {
       if (current) localStorage.setItem("gazkontur-object", current);
@@ -200,6 +219,21 @@ export default function App() {
     const timer = setTimeout(() => setToast(""), 6000);
     return () => clearTimeout(timer);
   }, [toast]);
+  function openDocumentPage(document: Doc) {
+    window.history.replaceState(
+      { ...window.history.state, gazkonturReturn: { tab, search, category } },
+      "",
+    );
+    setDoc(null);
+    window.location.assign(document.url);
+  }
+  useEffect(() => {
+    const onReturn = (event: PageTransitionEvent) => {
+      if (event.persisted) setDoc(null);
+    };
+    window.addEventListener("pageshow", onReturn);
+    return () => window.removeEventListener("pageshow", onReturn);
+  }, []);
   useEffect(() => {
     if (!doc) {
       dialog.current?.close();
@@ -218,6 +252,10 @@ export default function App() {
           throw Error("Документ не найден");
         const blob = await r.blob();
         if (!active) return;
+        if (doc.mimeType === "application/pdf" && needsPdfPage()) {
+          openDocumentPage(doc);
+          return;
+        }
         url = URL.createObjectURL(blob);
         setDocUrl(url);
       })
@@ -937,10 +975,25 @@ export default function App() {
               />
             </div>
           ) : doc?.mimeType === "application/pdf" ? (
-            <object data={docUrl} type="application/pdf" aria-label={doc.title}>
+            <object
+              data={docUrl}
+              type="application/pdf"
+              aria-label={doc.title}
+              onError={() => openDocumentPage(doc)}
+            >
               <div className="empty">
-                Браузер не поддерживает встроенный просмотр PDF. Откройте или
-                скачайте файл кнопкой ниже.
+                Браузер не поддерживает встроенный просмотр PDF.
+                <a
+                  className="secondary"
+                  href={doc.url}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    openDocumentPage(doc);
+                  }}
+                >
+                  Открыть PDF отдельной страницей
+                </a>
+                <span>Вернуться в приложение можно кнопкой «Назад».</span>
               </div>
             </object>
           ) : (
@@ -969,9 +1022,19 @@ export default function App() {
             <>
               <a
                 className="secondary"
-                href={docUrl}
-                target="_blank"
+                href={doc?.mimeType === "application/pdf" ? doc.url : docUrl}
+                target={
+                  doc?.mimeType === "application/pdf" ? undefined : "_blank"
+                }
                 rel="noreferrer"
+                onClick={
+                  doc?.mimeType === "application/pdf"
+                    ? (event) => {
+                        event.preventDefault();
+                        openDocumentPage(doc);
+                      }
+                    : undefined
+                }
               >
                 Открыть отдельно
               </a>

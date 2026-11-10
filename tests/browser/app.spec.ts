@@ -1,7 +1,19 @@
 import { test, expect } from "@playwright/test";
 test("three sections, commands, selection persistence and documents", async ({
   page,
+  context,
 }, info) => {
+  await context.route("**/documents/**/*.pdf", async (route) => {
+    if (
+      route.request().isNavigationRequest() ||
+      route.request().headers()["accept"]?.includes("text/html")
+    )
+      await route.fulfill({
+        contentType: "text/html",
+        body: "<h1>Browser PDF page</h1>",
+      });
+    else await route.continue();
+  });
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
@@ -40,12 +52,12 @@ test("three sections, commands, selection persistence and documents", async ({
   await page
     .getByRole("button", { name: /Режимные карты.*Режимная карта ШРП-5/ })
     .click();
-  await expect(page.getByRole("link", { name: "Скачать" })).toBeVisible();
-  await expect(page.locator("object")).toHaveAttribute(
-    "type",
-    "application/pdf",
-  );
-  await page.getByRole("button", { name: "Закрыть просмотр" }).click();
+  // The headless browser also falls back when its embedded PDF plugin fails.
+  await expect(page).toHaveURL(/\/documents\/shrp-5\/regime-card.pdf$/);
+  await page.goBack();
+  await expect(
+    page.getByRole("heading", { name: "Документы", exact: true }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Голос", exact: true }).click();
   await page.screenshot({
     path: `test-results/${info.project.name}-voice.png`,
@@ -99,7 +111,8 @@ test("offline reload retains data and an opened document", async ({
   await expect(page.locator(".image-scroll img")).toBeVisible();
 });
 test("broken object, missing document and empty search have useful states", async ({
-  page, context,
+  page,
+  context,
 }) => {
   await page.route("**/config/objects/shrp-5.json", (route) =>
     route.fulfill({ body: "{broken", contentType: "application/json" }),
@@ -138,3 +151,62 @@ test("refresh loads new values without navigation", async ({ page }) => {
   await page.getByRole("button", { name: "Обновить", exact: true }).click();
   await expect(page.locator(".metric-card").first()).toContainText("0.49");
 });
+
+for (const mode of ["no-viewer", "android-native"] as const) {
+  test(`PDF direct page and Back restore document filters: ${mode}`, async ({
+    page,
+    context,
+  }) => {
+    await context.addInitScript((mode) => {
+      Object.defineProperty(navigator, "pdfViewerEnabled", {
+        get: () => mode === "android-native",
+      });
+      Object.defineProperty(navigator, "userAgent", {
+        get: () =>
+          mode === "android-native"
+            ? "Mozilla/5.0 (Linux; Android 14)"
+            : "Mozilla/5.0 (Windows NT 10.0)",
+      });
+    }, mode);
+    // Headless Chromium cannot validate Android's native PDF UI. Substitute only
+    // its navigation response; the application's preliminary PDF fetch stays real.
+    await context.route("**/documents/**/*.pdf", async (route) => {
+      if (
+        route.request().isNavigationRequest() ||
+        route.request().headers()["accept"]?.includes("text/html")
+      )
+        await route.fulfill({
+          contentType: "text/html",
+          body: "<h1>Browser PDF page</h1>",
+        });
+      else await route.continue();
+    });
+    await page.goto("/");
+    await expect(page.getByLabel("Текущий объект")).toBeVisible();
+    await page.getByLabel("Текущий объект").selectOption("shrp-5");
+    await page.getByRole("button", { name: "Документы", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Режимные карты", exact: true })
+      .click();
+    await page.getByLabel("Поиск документов").fill("ШРП-5");
+    await page.locator(".document-card").click();
+    await expect(page).toHaveURL(/\/documents\/shrp-5\/regime-card.pdf$/);
+    expect(context.pages()).toHaveLength(1);
+    await page.goBack();
+    await expect(
+      page.getByRole("heading", { name: "Документы", exact: true }),
+    ).toBeVisible();
+    await expect(page.getByLabel("Текущий объект")).toHaveValue("shrp-5");
+    await expect(page.getByLabel("Поиск документов")).toHaveValue("ШРП-5");
+    await expect(
+      page.getByRole("button", { name: "Режимные карты", exact: true }),
+    ).toHaveClass("active");
+    await expect(page.getByRole("dialog")).not.toBeVisible();
+    // A fresh load, without the back-forward cache, restores the same state too.
+    await page.reload();
+    await expect(
+      page.getByRole("heading", { name: "Документы", exact: true }),
+    ).toBeVisible();
+    await expect(page.getByLabel("Поиск документов")).toHaveValue("ШРП-5");
+  });
+}
